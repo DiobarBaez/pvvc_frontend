@@ -13,8 +13,10 @@ import { createApp } from 'vue'
 // Plugins
 import { registerPlugins } from '@/plugins'
 
+// Store interno para auth
+import store from './store/store';
+
 const app = createApp(App)
-
+app.use(store);
 registerPlugins(app)
-
 app.mount('#app')

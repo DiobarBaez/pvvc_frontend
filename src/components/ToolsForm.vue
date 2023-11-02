@@ -49,7 +49,7 @@
       <!-- Button "Add Instrument" aligned to the right -->
       <v-row class="text-right">
         <v-col cols="12">
-          <v-btn @click="openAddInstrumentModal" color="primary">Add Instrument</v-btn>
+          <v-btn @click="openAddInstrumentModal" color="#313844">Add Instrument</v-btn>
         </v-col>
       </v-row>
 
@@ -66,7 +66,7 @@
             <v-text-field v-model="newInstrument.categoria" label="Category"></v-text-field>
 
             <v-row>
-              <v-btn @click="openAddItemModal" color="primary">Add Item</v-btn>
+              <v-btn @click="openAddItemModal" color="#313844">Add Item</v-btn>
             </v-row>
             <v-row>
               <div class="card-container">
@@ -124,7 +124,7 @@
 
             <!-- Button to add a new item -->
             <v-row>
-              <v-btn @click="openAddItemUpdateModal" color="primary">Add Item</v-btn>
+              <v-btn @click="openAddItemUpdateModal" color="#313844">Add Item</v-btn>
             </v-row>
 
             <!-- Cards to display information about items -->
@@ -163,7 +163,7 @@
 
           <!-- Action buttons -->
           <v-card-actions>
-            <v-btn @click="updateInstrument" color="primary">UPDATE</v-btn>
+            <v-btn @click="updateInstrument" color="warning">UPDATE</v-btn>
             <v-btn @click="closeUpdateInstrumentModal">Cancel</v-btn>
           </v-card-actions>
         </v-card>
@@ -202,7 +202,7 @@
             ></v-text-field>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="addNewItem" color="primary">Add</v-btn>
+            <v-btn @click="addNewItem" color="#313844">Add</v-btn>
             <v-btn @click="closeAddItemModal">Cancel</v-btn>
           </v-card-actions>
         </v-card>
@@ -241,7 +241,7 @@
             ></v-text-field>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="addNewUpdateItem" color="primary">Add</v-btn>
+            <v-btn @click="addNewUpdateItem" color="#313844">Add</v-btn>
             <v-btn @click="closeAddUpdateItemModal">Cancel</v-btn>
           </v-card-actions>
         </v-card>
@@ -291,7 +291,7 @@
             ></v-text-field>
           </v-card-text>
           <v-card-actions>
-            <v-btn @click="updateItemModal" color="primary">UPDATE</v-btn>
+            <v-btn @click="updateItemModal" color="warning">UPDATE</v-btn>
             <v-btn @click="closeUpdateItemModal">Cancel</v-btn>
           </v-card-actions>
         </v-card>
@@ -346,7 +346,7 @@
       </v-dialog>
 
       <!-- Feedback message -->
-      <v-snackbar v-model="feedbackMessage" :timeout="1000" color="primary">
+      <v-snackbar v-model="feedbackMessage" :timeout="1000" color="#313844">
         {{ feedbackMessage }}
       </v-snackbar>
 
@@ -501,10 +501,11 @@
 
   // Método para abrir el modal de actualizar instrumento
   const openUpdateInstrumentModal = (instrument) => {
+    refreshData();
     selectedInstrument.value = instrument;
     updatedInstrument.value = { ...instrument };
     isUpdateInstrumentModalActive.value = true;
-    console.log(updatedInstrument.value);
+    //console.log(updatedInstrument.value);
   };
 
   // Método para cerrar el modal de actualizar instrumento
@@ -801,7 +802,7 @@
 <style>
   /********** ESTILOS PARA EL TITULO ***********/
   td button:hover {
-    color: #0056b3; /* Color del texto de los botones al pasar el mouse */
+    color: #313844; /* Color del texto de los botones al pasar el mouse */
   }
 
   .page-title {
@@ -812,13 +813,13 @@
   }
 
   .container-highlight {
-    box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.5); /* Sombra suave alrededor del contenedor */
+    box-shadow: 0px 0px 10px #313844; /* Sombra suave alrededor del contenedor */
     transition: box-shadow 0.3s ease; /* Transición suave para la sombra */
   }
 
   /* Estilo al pasar el mouse sobre los contenedores */
   .container-highlight:hover {
-    box-shadow: 0px 0px 15px rgba(0, 123, 255, 0.8); /* Aumenta la intensidad de la sombra al pasar el mouse */
+    box-shadow: 0px 0px 15px #313844; /* Aumenta la intensidad de la sombra al pasar el mouse */
   }
 
   /********** ESTILOS PARA LOS MODALES ***********/
@@ -833,15 +834,15 @@
   .modal {
     max-width: 1000px; /* Ajusta según tus necesidades */
     width: 100%;
-    height: auto; /* Ajusta según tus necesidades */
+    height: auto; /* Ajusta según tus necesidades */ 
   }
 
   .v-card-title {
-    background-color: #007bff; /* Color de fondo del encabezado */
+    background-color: #313844; /* Color de fondo del encabezado */
     color: #fff; /* Color del texto del encabezado */
     padding: 16px;
-    border-top-left-radius: 8px; /* Esquina superior izquierda redondeada */
-    border-top-right-radius: 8px; /* Esquina superior derecha redondeada */
+    border-top-left-radius: 0px; /* Esquina superior izquierda redondeada */
+    border-top-right-radius: 0px; /* Esquina superior derecha redondeada */
   }
 
   .v-card-text {
@@ -855,7 +856,7 @@
 
   /* Estilo para los botones "Add" y "Update" */
   .v-btn.primary {
-    background-color: #007bff; /* Color de fondo del botón */
+    background-color: #313844; /* Color de fondo del botón */
     color: #fff; /* Color del texto del botón */
     border: none;
     border-radius: 4px; /* Esquinas redondeadas del botón */
@@ -864,7 +865,7 @@
   }
 
   .v-btn.primary:hover {
-    background-color: #0056b3; /* Color de fondo del botón al pasar el mouse */
+    background-color: #313844; /* Color de fondo del botón al pasar el mouse */
   }
 
   /* Estilo para el botón "Cancel" */
@@ -896,7 +897,7 @@
 
   /* Estilo para las celdas del encabezado de la tabla */
   th {
-    background-color: #007bff; /* Color de fondo del encabezado */
+    background-color: #313844; /* Color de fondo del encabezado */
     color: #fff; /* Color del texto del encabezado */
     padding: 10px;
     text-align: left;
@@ -919,7 +920,7 @@
     border: none;
     padding: 0;
     cursor: pointer;
-    color: #007bff; /* Color del texto de los botones */
+    color: #313844; /* Color del texto de los botones */
     margin-right: 10px;
     font-weight: bold;
     transition: color 0.3s ease; /* Efecto de transición al pasar el mouse */
@@ -931,7 +932,7 @@
   }
 
   /* Estilo para dimensionar automáticamente la última columna */
-  .centered-buttons {
+  .centered-buttons { 
     text-align: center;
     white-space: nowrap; /* Evita que el contenido se divida en varias líneas */
   }
@@ -967,8 +968,8 @@
   /* Estilo para la sección de la imagen de la Card */
   .card-image {
     overflow: hidden;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
   }
 
   .card-img-top {
@@ -979,6 +980,8 @@
   /* Estilo para la sección de la información de la Card */
   .card-info {
     padding: 1rem;
+    color: #ffff;
+    background-color: #313844;
   }
 
   /* Estilo para las cards */
@@ -995,10 +998,10 @@
   /* Estilo para las cards */
   .card {
     width: 100%;
-    border: 1px solid #ccc;
+    border: 5px solid #ccc;
     border-radius: 8px;
     overflow: hidden;
-    background-color: #fff;
+    background-color: #313844;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
     cursor: pointer;
