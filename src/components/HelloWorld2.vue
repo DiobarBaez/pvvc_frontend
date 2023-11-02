@@ -52,7 +52,7 @@
         <!-- Botón "Add User" alineado a la derecha -->
         <v-row class="text-right">
           <v-col cols="12">
-            <v-btn @click="openAddUserModal" color="primary">Add User</v-btn>
+            <v-btn @click="openAddUserModal" color="#313844">Add User</v-btn>
           </v-col>
         </v-row>
   
@@ -69,7 +69,7 @@
               <v-text-field v-model="newUser.password" label="Password"></v-text-field>
             </v-card-text>
             <v-card-actions>
-              <v-btn @click="addNewUser" color="primary">Add</v-btn>
+              <v-btn @click="addNewUser" color="#313844">Add</v-btn>
               <v-btn @click="closeAddUserModal">Cancel</v-btn>
             </v-card-actions>
           </v-card>
@@ -116,7 +116,7 @@
               <v-text-field v-model="updatedUser.password" label="Password"></v-text-field>
             </v-card-text>
             <v-card-actions>
-              <v-btn @click="updateUser" color="primary">Update</v-btn>
+              <v-btn @click="updateUser" color="warning">Update</v-btn>
               <v-btn @click="closeUpdateUserModal">Cancel</v-btn>
             </v-card-actions>
           </v-card>
@@ -141,7 +141,7 @@
         </v-dialog>
   
         <!-- Feedback message -->
-        <v-snackbar v-model="feedbackMessage" :timeout="1000" color="primary">
+        <v-snackbar v-model="feedbackMessage" :timeout="1000" color="#313844">
           {{ feedbackMessage }}
         </v-snackbar>
   
@@ -336,7 +336,7 @@
       /********** ESTILOS PARA EL TITULO ***********/
   
       td button:hover {
-        color: #0056b3; /* Color del texto de los botones al pasar el mouse */
+        color: #313844; /* Color del texto de los botones al pasar el mouse */
       }
   
       .page-title {
@@ -347,13 +347,13 @@
       }
   
           .container-highlight {
-        box-shadow: 0px 0px 10px rgba(0, 123, 255, 0.5); /* Sombra suave alrededor del contenedor */
+        box-shadow: 0px 0px 10px #313844; /* Sombra suave alrededor del contenedor */
         transition: box-shadow 0.3s ease; /* Transición suave para la sombra */
       }
   
       /* Estilo al pasar el mouse sobre los contenedores */
       .container-highlight:hover {
-        box-shadow: 0px 0px 15px rgba(0, 123, 255, 0.8); /* Aumenta la intensidad de la sombra al pasar el mouse */
+        box-shadow: 0px 0px 15px #313844; /* Aumenta la intensidad de la sombra al pasar el mouse */
       }
   
   
@@ -367,7 +367,7 @@
       }
   
       .v-card-title {
-        background-color: #007bff; /* Color de fondo del encabezado */
+        background-color: #313844; /* Color de fondo del encabezado */
         color: #fff; /* Color del texto del encabezado */
         padding: 16px;
         border-top-left-radius: 8px; /* Esquina superior izquierda redondeada */
@@ -385,7 +385,7 @@
   
       /* Estilo para los botones "Add" y "Update" */
       .v-btn.primary {
-        background-color: #007bff; /* Color de fondo del botón */
+        background-color: #313844; /* Color de fondo del botón */
         color: #fff; /* Color del texto del botón */
         border: none;
         border-radius: 4px; /* Esquinas redondeadas del botón */
@@ -394,7 +394,7 @@
       }
   
       .v-btn.primary:hover {
-        background-color: #0056b3; /* Color de fondo del botón al pasar el mouse */
+        background-color: #313844; /* Color de fondo del botón al pasar el mouse */
       }
   
       /* Estilo para el botón "Cancel" */
@@ -430,7 +430,7 @@
   
       /* Estilo para las celdas del encabezado de la tabla */
       th {
-        background-color: #007bff; /* Color de fondo del encabezado */
+        background-color: #313844; /* Color de fondo del encabezado */
         color: #fff; /* Color del texto del encabezado */
         padding: 10px;
         text-align: left;
@@ -453,7 +453,7 @@
         border: none;
         padding: 0;
         cursor: pointer;
-        color: #007bff; /* Color del texto de los botones */
+        color: #313844; /* Color del texto de los botones */
         margin-right: 10px;
         font-weight: bold;
         transition: color 0.3s ease; /* Efecto de transición al pasar el mouse */
