@@ -1,8 +1,8 @@
 <template>
-    <Tools />
+    <ToolsForm/>
 </template>
   
 <script setup>
-    import Tools from '@/components/ToolsForm.vue'
+    import ToolsForm from '@/components/ToolsForm.vue'
 </script>
   

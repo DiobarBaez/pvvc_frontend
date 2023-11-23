@@ -75,7 +75,7 @@
                     <div class="card mb-4">
                       <!-- Sección de la imagen de la Card -->
                       <div class="card-image">
-                        <img :src="card.imageUrl" class="card-img-top" alt="Imagen de la Card">
+                        <img :src="card.imageUrl.data" class="card-img-top" alt="Imagen de la Card">
                       </div>
 
                       <!-- Sección de la información de la Card -->
@@ -135,9 +135,8 @@
                     <div class="card mb-4">
                       <!-- Section for the image of the Card -->
                       <div class="card-image">
-                        <img :src="card1.imageUrl" class="card-img-top" alt="Card Image">
+                        <img :src="getImageUrl(card1.imageUrl)" class="card-img-top" alt="Imagen de la Card">
                       </div>
-
                       <!-- Section for the information of the Card -->
                       <div class="card-info">
                         <div class="card-body">
@@ -146,7 +145,6 @@
                           <p class="card-text">Registration Type: {{ card1.registro }}</p>
                           <p class="card-text" v-if="card1.registro === 'Tiempo'">Time: {{ card1.tiempo }}</p>
                           <p class="card-text">Rating: {{ card1.escala }}</p>
-
                           <!-- Buttons to edit and delete -->
                           <div class="card-actions">
                             <v-btn @click="openUpdateItemModal(card1)" class="mt-4" color="warning">UPDATE</v-btn>
@@ -169,6 +167,7 @@
         </v-card>
       </v-dialog>
 
+
       <!-- Modal for adding a new item -->
       <v-dialog v-model="isAddItemModalActive">
         <v-card>
@@ -178,7 +177,7 @@
           <v-card-text>
             <!-- Campos de texto para el nuevo item -->
             <v-text-field v-model="newItem.descripcion" label="Description"></v-text-field>
-            <v-text-field v-model="newItem.imageUrl" label="Image URL"></v-text-field>
+            <v-file-input label="Upload Image"  @change="handleImageUpload" accept=".png, .jpg, .jpeg"></v-file-input>
             <v-select
               v-model="newItem.registro"
               :items="['Botón', 'Tiempo']"
@@ -217,7 +216,8 @@
           <v-card-text>
             <!-- Campos de texto para el nuevo item -->
             <v-text-field v-model="newItem.descripcion" label="Description"></v-text-field>
-            <v-text-field v-model="newItem.imageUrl" label="Image URL"></v-text-field>
+            <!--< v-text-field v-model="newItem.imageUrl" label="Image URL"> </v-text-field>-->
+            <v-file-input label="Upload Image"  @change="handleImageUpload" accept=".png, .jpg, .jpeg"></v-file-input>
             <v-select
               v-model="newItem.registro"
               :items="['Botón', 'Tiempo']"
@@ -255,9 +255,40 @@
           </v-card-title>
           <v-card-text>
             <!-- Campos de texto para el nuevo item -->
-            <v-text-field v-model="updateItemAct.descripcion" lab
-            el="Description"></v-text-field>
-            <v-text-field v-model="updateItemAct.imageUrl" label="Image URL"></v-text-field>
+            <v-text-field v-model="updateItemAct.descripcion" label="Description"></v-text-field>
+
+            <div class="card-container">
+              <!-- Si el valor de imageUrl  no es nulo-->
+              <div v-if='updateItemAct.imageUrl' class="card-column">
+                <transition name="card-fade">
+                  <div class="card mb-4">
+                    <!-- Section for the image of the Card -->
+                    <div class="image-container">
+                      <transition name="fade">
+                        <div class="image-wrapper">
+                          <!-- Imagen actual -->
+                          <img v-if="updateItemAct.imageUrl.data" :src="updateItemAct.imageUrl.data" class="image" alt="Image">
+                          <!-- Buttons to edit and delete -->
+                          <div class="eliminarImagen">
+                            <v-icon  class="remove-icon" @click="removeImage">mdi-close</v-icon>
+                          </div>
+                        </div>
+                      </transition>
+                    </div>
+                  </div>
+                </transition>
+              </div>
+              <!-- Si el valor de imageUrl es nulo-->
+              <div v-else class="card-column">
+                <transition name="card-fade">
+                  <!-- Section for the image of the Card -->
+                  <div class="image-container">
+                    <v-file-input label="Upload Image"  @change="handleImageUploadUpdate" accept=".png, .jpg, .jpeg"></v-file-input>
+                  </div>
+                </transition>
+              </div>
+            </div>
+
             <v-select
               v-model="updateItemAct.registro"
               :items="['Botón', 'Tiempo']"
@@ -296,7 +327,7 @@
           </v-card-actions>
         </v-card>
       </v-dialog>
-
+      
       <!-- Modal for confirming item deletion -->
       <v-dialog v-model="isDeleteItemConfirmationActive">
           <v-card>
@@ -346,9 +377,10 @@
       </v-dialog>
 
       <!-- Feedback message -->
-      <v-snackbar v-model="feedbackMessage" :timeout="1000" color="#313844">
-        {{ feedbackMessage }}
+      <v-snackbar v-model="feedbackMessage.show" :timeout="3000" :color="feedbackMessage.color">
+        {{ feedbackMessage.message }}
       </v-snackbar>
+
 
     </v-container>
   </v-app>
@@ -367,7 +399,11 @@
   const isUpdateInstrumentModalActive = ref(false);
   const isDeleteInstrumentConfirmationActive = ref(false);
   const selectedInstrument = ref(null);
-  const feedbackMessage = ref("");
+  const feedbackMessage = ref({
+    show: false,
+    message: '',
+    color: '',
+  });  
   const isAddInstrumentModalActive = ref(false);
   const searchTerm = ref("");
   let cards = [];
@@ -381,7 +417,10 @@
   const newItem = ref({
     num: 0,
     descripcion: "",
-    imageUrl: "",
+    imageUrl: {
+      data: null,
+      typeFile: "",
+    },
     registro: "",
     tiempo: 0,
     escala: 0,
@@ -389,7 +428,10 @@
   const updateItemAct = ref({
     num: 0,
     descripcion: "",
-    imageUrl: "",
+    imageUrl: {
+      data: null,
+      typeFile: "",
+    },
     registro: "",
     tiempo: 0,
     escala: 0,
@@ -429,17 +471,19 @@
     newInstrument.value.items = [...cards];
 
     try {
+      console.log(newInstrument.value);
       const response = await axios.post(API_URL + "tools/", newInstrument.value);
       refreshData();
-      feedbackMessage.value = response.data.message;
+      showFeedbackMessage(response.data.message, 'success');
       newInstrument.value = {};
       closeAddInstrumentModal();
     } catch (error) {
       console.error("Error adding instrument:", error);
       if (error.response) {
-        feedbackMessage.value = error.response.data.message || "Error adding instrument.";
+        showFeedbackMessage(error.response.data.message || "Error al actualizar instrumento" , 'error');
       } else {
-        feedbackMessage.value = "Error adding instrument.";
+        showFeedbackMessage("Error al actualizar instrumento" , 'error');
+
       }
     }
   };
@@ -459,41 +503,73 @@
     isAddInstrumentModalActive.value = false;
   };
 
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      // Accede a los datos de la imagen
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        // Actualiza el valor de la imagen en el objeto newItem
+        newItem.value.imageUrl = {
+          data: reader.result, // Aquí se almacena la imagen como base64
+          typeFile: file.type,
+        };
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
   const addNewItem = () => {
-    if (!newItem.value.descripcion || !newItem.value.imageUrl || !newItem.value.registro) {
-      feedbackMessage.value = "Por favor, completa todos los campos obligatorios.";
+    if (
+      (newItem.value.descripcion && newItem.value.imageUrl && newItem.value.registro && newItem.value.escala) ||
+      (newItem.value.descripcion && newItem.value.imageUrl && newItem.value.registro && newItem.value.tiempo && newItem.value.escala)
+    ) {
+      if (newItem.value.registro === 'Tiempo' && newItem.value.tiempo === 0) {
+        showFeedbackMessage("Por favor, ingresa un tiempo válido.", 'warning');
+        return;
+      }
+
+      if (newItem.value.escala == 0 || newItem.value.escala > 5) {
+        showFeedbackMessage("Por favor, ingresa una escala de valoración válida.", 'warning');
+        return;
+      }
+
+      // Agrega el nuevo ítem
+      cards.push({
+        num: cards.length + 1,
+        descripcion: newItem.value.descripcion,
+        imageUrl: newItem.value.imageUrl,
+        registro: newItem.value.registro,
+        tiempo: newItem.value.tiempo,
+        escala: newItem.value.escala,
+      });
+
+      // Cierra el modal y reinicia los valores
+      closeAddItemModal();
+
+      //console.log(newItem.value);
+
+      console.log(newItem.value)
+
+      newItem.value = {
+        ...newItem.value,
+        descripcion: "",
+        imageUrl: {
+          data: null,
+          typeFile: "",
+        },
+        registro: "",
+        tiempo: 0,
+        escala: 0,
+      };
+
+    } else {
+      showFeedbackMessage("Por favor, completa todos los campos obligatorios.", 'warning');
       return;
     }
-
-    if (newItem.value.registro === 'Tiempo' && newItem.value.tiempo === 0) {
-      feedbackMessage.value = "Por favor, ingresa un tiempo válnumo.";
-      return;
-    }
-
-    if (newItem.value.escala == 0 || newItem.value.escala > 5) {
-      feedbackMessage.value = "Por favor, ingresa un rating valnumo.";
-      return;
-    }
-
-    cards.push({
-      num: cards.length + 1,
-      descripcion: newItem.value.descripcion,
-      imageUrl: newItem.value.imageUrl,
-      registro: newItem.value.registro,
-      tiempo: newItem.value.tiempo,
-      escala: newItem.value.escala,
-    });
-
-    closeAddItemModal();
-
-    newItem.value = {
-      ...newItem.value, 
-      descripcion: "",
-      imageUrl: "",
-      registro: "",
-      tiempo: 0,
-      escala: 0,
-    };
   };
 
 
@@ -523,7 +599,7 @@
     const isDuplicateAcronym = instruments.value.some((instrument) => instrument.acronimo === updatedInstrument.value.acronimo && instrument.id !== selectedInstrument.value.id);
 
     if (isDuplicateName || isDuplicateAcronym) {
-      feedbackMessage.value = "Name or acronym already exists for other instruments. Enter unique values.";
+      showFeedbackMessage("Name or acronym already exists for other instruments. Enter unique values.", 'warning');
       return;
     }
 
@@ -532,11 +608,11 @@
       const response = await axios.patch(API_URL + `tools/${selectedInstrument.value.nombre}`, updatedInstrument.value);
       console.log(updatedInstrument.value);
       refreshData();
-      feedbackMessage.value = response.data.message;
+      showFeedbackMessage(response.data.message, 'success');
       closeUpdateInstrumentModal();
     } catch (error) {
       console.error("Error updating instrument:", error);
-      feedbackMessage.value = "Error updating instrument.";
+      showFeedbackMessage("Error updating instrument.", 'error');
     }
   };
 
@@ -568,12 +644,12 @@
 
   const updateItemModal = () => {
   if (!updateItemAct.value.descripcion || !updateItemAct.value.imageUrl || !updateItemAct.value.registro) {
-    feedbackMessage.value = "Por favor, completa todos los campos obligatorios.";
+    showFeedbackMessage("Por favor, completa todos los campos obligatorios", 'warning');
     return;
   }
 
   if (updateItemAct.value.registro === 'Tiempo' && updateItemAct.value.tiempo === 0) {
-    feedbackMessage.value = "Por favor, ingresa un tiempo válido.";
+    showFeedbackMessage("Por favor, ingresa un tiempo válido.", 'warning');
     return;
   }
 
@@ -639,17 +715,17 @@
 
   const addNewUpdateItem = () => {
     if (!newItem.value.descripcion || !newItem.value.imageUrl || !newItem.value.registro) {
-      feedbackMessage.value = "Por favor, completa todos los campos obligatorios.";
+      showFeedbackMessage("Por favor, completa todos los campos obligatorios.", 'warning');
       return;
     }
 
     if (newItem.value.registro === 'Tiempo' && newItem.value.tiempo === 0) {
-      feedbackMessage.value = "Por favor, ingresa un tiempo válnumo.";
+      showFeedbackMessage("Por favor, ingresa un tiempo válido.", 'warning');
       return;
     }
 
     if (newItem.value.escala == 0 || newItem.value.escala > 5) {
-      feedbackMessage.value = "Por favor, ingresa un rating valnumo.";
+      showFeedbackMessage("Por favor, ingresa una escala de valoracion valida.", 'warning');
       return;
     }
 
@@ -694,10 +770,9 @@
       try {
         const response = await axios.delete(API_URL + `tools/${selectedInstrument.value}`);
         refreshData();
-        feedbackMessage.value = response.data.message;
+        showFeedbackMessage(response.data.message, 'success');
       } catch (error) {
-        console.error("Error deleting instrument:", error);
-        feedbackMessage.value = "Error deleting instrument.";
+        showFeedbackMessage("Error deleting instrument.", 'warning');
       } finally {
         selectedInstrument.value = null;
         isDeleteInstrumentConfirmationActive.value = false;
@@ -762,7 +837,80 @@
     selectedCardId.value = null;
     isDeleteItemConfirmationActive.value = false;
   };
+
+
+  /**   Metodos relacionados con eliminar y agregar imagen de item en actualizancion **/
+
+  const removeImage = () => { 
+    updateItemAct.value.imageUrl = null;
+  }
+
+  const handleImageUploadUpdate = (event) => {
+    const file = event.target.files[0];
+
+    if (file) {
+      // Accede a los datos de la imagen
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        // Clona el objeto sin la reactividad
+        const updatedItem = JSON.parse(JSON.stringify(updateItemAct.value));
+
+        // Actualiza el valor de la imagen en el objeto newItem
+        updatedItem.value.imageUrl = {
+          data: reader.result, // Aquí se almacena la imagen como base64
+          typeFile: file.type,
+        };
+
+        // Actualiza el valor del objeto original (updateItemAct) con el nuevo objeto
+        updateItemAct.value = updatedItem;
+      };
+
+      reader.readAsDataURL(file);
+    }
+  };
+
+  /*
+  const getImageUrl = async (imageData) => {
+    if (imageData && imageData.data) {
+      const base64Data = await getBase64Image(imageData.data);
+      return 'data:image/png;base64,' + base64Data;
+    } else {
+      return 'default-image-url.jpg';
+    }
+  }
+
+  const getBase64Image = async (binaryData) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = (error) => reject(error);
+      reader.readAsDataURL(new Blob([new Uint8Array(binaryData.buffer)], { type: 'image/png' }));
+    });
+  }
   
+  */
+
+  const getImageUrl = (imageUrl) => {
+    if (imageUrl && imageUrl.data && imageUrl.contentType) {
+      // Convierte el Uint8Array a Blob
+      const blob = new Blob([imageUrl.data], { type: imageUrl.contentType });
+
+      // Crea una URL de datos desde el Blob
+      const url = URL.createObjectURL(blob);
+
+      // Retorna la URL completa
+      console.log("si entro")
+      console.log(url)
+
+      return url;
+    }
+    console.log("no entro")
+    // Puedes proporcionar una URL de imagen predeterminada o algún manejo de error aquí
+    return ''; 
+  };
+
+
   /***  Métodos de Utilidad   ***/
 
   const refreshData = async () => {
@@ -788,6 +936,12 @@
         );
       });
     }
+  };
+
+  const showFeedbackMessage = (message, type) => {
+      feedbackMessage.value.message = message;
+      feedbackMessage.value.color = type;
+      feedbackMessage.value.show = true;
   };
 
   onMounted(async () => {
@@ -1040,5 +1194,52 @@
     margin-bottom: 15px;
     font-size: 16px;
   }
+
+
+  .card-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card-column {
+  flex: 1 0 300px; /* Ajusta según tus necesidades */
+}
+
+.image-container {
+  position: relative;
+}
+
+.image-wrapper {
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+}
+
+.eliminarImagen {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.change-icon,
+.remove-icon {
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  padding: 4px;
+  margin-bottom: 4px; /* Ajusta según tus necesidades */
+}
+
+.change-icon:hover,
+.remove-icon:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+}
+
+
 
 </style>
