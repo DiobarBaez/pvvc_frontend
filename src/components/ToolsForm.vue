@@ -135,7 +135,7 @@
                     <div class="card mb-4">
                       <!-- Section for the image of the Card -->
                       <div class="card-image">
-                        <img :src="getImageUrl(card1.imageUrl)" class="card-img-top" alt="Imagen de la Card">
+                        <img :src="card1.imageUrl" class="card-img-top" alt="Imagen de la Card">
                       </div>
                       <!-- Section for the information of the Card -->
                       <div class="card-info">
@@ -517,7 +517,6 @@
           typeFile: file.type,
         };
       };
-
       reader.readAsDataURL(file);
     }
   };
@@ -643,6 +642,7 @@
   };
 
   const updateItemModal = () => {
+    /*
   if (!updateItemAct.value.descripcion || !updateItemAct.value.imageUrl || !updateItemAct.value.registro) {
     showFeedbackMessage("Por favor, completa todos los campos obligatorios", 'warning');
     return;
@@ -652,6 +652,7 @@
     showFeedbackMessage("Por favor, ingresa un tiempo válido.", 'warning');
     return;
   }
+  */
 
   const updatedCard = {
     num: selectedCard.value.num,
@@ -671,7 +672,7 @@
     cards.splice(index, 1, updatedCard);
   }
 
-  updateCard(updatedCard);
+  updateCard(updatedCard.value);
 
   closeUpdateItemModal();
 

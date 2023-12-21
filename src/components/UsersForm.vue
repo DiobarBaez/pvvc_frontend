@@ -243,6 +243,7 @@
   
   const API_URL = "http://localhost:5038/api/1.0/";
   var newUser = ref({
+    id: "", 
     name: "",
     rol: "",
     email: "",
@@ -250,6 +251,7 @@
     assignedTo: [],
   });
   var updatedUser = ref({
+    id: "", 
     name: "",
     rol: "",
     email: "",
@@ -344,10 +346,11 @@
     }
 
     try {
+      const resp = await axios.get(API_URL+"users/id/");
+      newUser.value.id = resp.data.data;
       const response = await axios.post(API_URL + "users/", newUser.value);
       refreshData();
       showFeedbackMessage(response.data.message, 'success');
-
       newUser.value = {};
       closeAddUserModal();
     } catch (error) {
@@ -548,6 +551,7 @@
 
   const openAddUserModal = () => {
     newUser = ref({
+      id: "", 
       name: "",
       rol: "",
       email: "",
